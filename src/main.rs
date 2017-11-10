@@ -1,24 +1,24 @@
 use std::os::raw::c_char;
 use std::ffi::CStr;
 use std::ffi::CString;
-use std::collections::HashMap;
-
 #[no_mangle]
 pub fn get_data(argu: *const c_char) -> *mut c_char {
-    let mut data = HashMap::new();
-    data.insert("Alice", "send");
-    data.insert("Bob", "receive");
-    data.insert("Carol", "intercept");
+
+    let test_string = "this is a very long string that has some charaters in it";
+    let test_string2 = "this is a very long string that has some charaters in it";
+    let test_string3 = "this is a very long string that has some charaters in it";
 
     let foo = unsafe {
        CStr::to_str(CStr::from_ptr(argu))
     };
 
-    let descriptions = data.iter()
-        .map(|(p,a)| format!("{} likes to {} messages with {:?}", p, a, foo.unwrap()))
+
+    let result = test_string
+        .match_indices(foo.unwrap())
+        .map(|(i, v)| format!("{}: {}", v, i))
         .collect::<Vec<_>>();
 
-    CString::new(descriptions.join(", "))
+    CString::new(result.join(", "))
         .unwrap()
         .into_raw()
 }
