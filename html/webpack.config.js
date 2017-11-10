@@ -12,7 +12,8 @@ module.exports = {
           loader: 'wargo-loader',
           options: {
             // The path to the webpack output relative to the project root
-            path: 'build'
+            path: 'build',
+            release: 'true'
           }
         }
       }

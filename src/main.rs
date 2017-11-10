@@ -15,7 +15,7 @@ impl JsBytes {
         let ptr = bytes.as_mut_ptr() as u32;
         let len = bytes.len() as u32;
         let cap = bytes.capacity() as u32;
-        forget(bytes);
+        forget(bytes); // do not drop until we tell you to!
         let boxed = Box::new(JsBytes { ptr, len, cap });
         Box::into_raw(boxed)
     }
@@ -24,8 +24,7 @@ impl JsBytes {
 #[no_mangle]
 pub fn drop_bytes(ptr: *mut JsBytes) {
     unsafe {
-        let boxed: Box<JsBytes> = Box::from_raw(ptr);
-        Vec::from_raw_parts(boxed.ptr as *mut u8, boxed.len as usize, boxed.cap as usize);
+        Box::from_raw(ptr);
     }
 }
 
@@ -37,17 +36,17 @@ fn find(source: &str, search_str: &str) -> Vec<u8> {
 }
 
 #[no_mangle]
-pub fn get_data(argu: *const c_char) -> *mut JsBytes {
-
-    let test_string = "this is a very long string that has some charaters in it";
-
-    let foo = unsafe {
-       CStr::to_str(CStr::from_ptr(argu))
+pub fn search_text(source_text: *const c_char, search_term: *const c_char) -> *mut JsBytes {
+    let source_text = unsafe {
+       CStr::to_str(CStr::from_ptr(source_text)).unwrap()
     };
 
-    JsBytes::new(find(test_string, foo.unwrap()))
+    let search_term = unsafe {
+       CStr::to_str(CStr::from_ptr(search_term)).unwrap()
+    };
+
+    JsBytes::new(find(source_text, search_term))
 }
 
 fn main() {
-    println!("Hello, world!");
 }
