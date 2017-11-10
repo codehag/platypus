@@ -1,0 +1,6 @@
+[package]
+name = "platypus"
+version = "0.1.0"
+authors = ["codehag <yulia.startsev@gmail.com>"]
+
+[dependencies]
